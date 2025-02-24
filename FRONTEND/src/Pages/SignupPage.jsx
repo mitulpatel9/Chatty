@@ -12,7 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { theme } = useThemeStore();
@@ -33,12 +33,24 @@ function SignupPage() {
       return toast.error("Password must be at least 2 characters long");
     return true;
   };
-
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateForm()) signup(formData);
-  };
 
+    const success = validateForm();
+
+    if (success === true) {
+      try {
+        await signup(formData);
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } catch (error) {
+        toast.error("Signup failed. Please try again.");
+      }
+    }
+  };
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"

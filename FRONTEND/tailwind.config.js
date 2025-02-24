@@ -48,6 +48,11 @@ export default {
             "coffee",
             "winter",
             "procyon",
+            "dracula",
+            "cmyk",
+            "winter",
+
+
         ]
 
 

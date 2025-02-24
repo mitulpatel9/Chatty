@@ -21,9 +21,9 @@ connectMongoDB('mongodb://127.0.0.1:27017/ChatApp', {
     .then(() => console.log('MongoDB connected successfully to ChatApp'))
     .catch((err) => console.log('MongoDB connection error: ', err));
 
-app.get('/', (req, res) => {
-    res.send("hello mitul");
-});
+// app.get('/', (req, res) => {
+//     res.send("hello mitul");
+// });
 
 app.use('/api/auth', userRoutes);
 app.use('/api/mess', messageRoutes);

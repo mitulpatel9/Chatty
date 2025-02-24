@@ -23,7 +23,7 @@ export const useAuthStore = create((set) => ({
     }
   },
 
-  signup: (data) => {
+  signup: async (data) => {
     set({ isSignup: true });
     try {
       console.log("Response from API:", data);

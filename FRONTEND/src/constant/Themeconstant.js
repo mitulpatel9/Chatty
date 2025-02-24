@@ -29,4 +29,8 @@ export const THEMES = [
     "coffee",
     "winter",
     "procyon",
+    "dracula",
+    "cmyk",
+    "winter",
+
 ];
