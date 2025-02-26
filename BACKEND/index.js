@@ -5,8 +5,9 @@ const userRoutes = require('./Routes/user');
 const messageRoutes = require('./Routes/message')
 const cookieParser = require('cookie-parser');
 const cors = require("cors");
-const app = express();
+const { app, server } = require('./utils/soket');
 const PORT = process.env.PORT;
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -21,12 +22,12 @@ connectMongoDB('mongodb://127.0.0.1:27017/ChatApp', {
     .then(() => console.log('MongoDB connected successfully to ChatApp'))
     .catch((err) => console.log('MongoDB connection error: ', err));
 
-// app.get('/', (req, res) => {
-//     res.send("hello mitul");
-// });
+app.get('/', (req, res) => {
+    res.send("hello mitul");
+});
 
 app.use('/api/auth', userRoutes);
 app.use('/api/mess', messageRoutes);
 
 
-app.listen(PORT, () => { console.log("server is started at" + PORT) });
+server.listen(PORT, () => { console.log("server is started at" + PORT) });

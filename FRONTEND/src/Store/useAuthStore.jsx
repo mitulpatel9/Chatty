@@ -1,20 +1,24 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/Axios";
 import toast from "react-hot-toast";
+import { io } from "socket.io-client";
 
-export const useAuthStore = create((set) => ({
+const BASE_URL = "http://localhost:5002";
+
+export const useAuthStore = create((set, get) => ({
   authuser: null,
   isSignin: false,
   isSignup: false,
   onlineUsers: [],
   isupdating: false,
   isCheckingAuth: true,
-
+  socket: null,
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check"); // Ensure correct route
       // console.log("Response from API / its in checkauth from stor:", res.data); // Ensure the response shows correct user data
       set({ authuser: res.data });
+      localStorage.setItem("authuser", JSON.stringify(res.data));
     } catch (error) {
       console.log("Error in checkAuth:", error.response?.data || error.message);
       set({ authuser: null });
@@ -27,10 +31,11 @@ export const useAuthStore = create((set) => ({
     set({ isSignup: true });
     try {
       console.log("Response from API:", data);
-      const res = axiosInstance.post("/auth/signup", data);
+      const res = await axiosInstance.post("/auth/signup", data);
       set({ authuser: res.data });
-
+      localStorage.setItem("authuser", JSON.stringify(res.data));
       toast.success("Signup successful!");
+      get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
       console.log("Error in signup:", error.response?.data || error.message);
@@ -44,7 +49,9 @@ export const useAuthStore = create((set) => ({
     try {
       const res = await axiosInstance.post("/auth/signin", data);
       set({ authuser: res.data });
+      localStorage.setItem("authuser", JSON.stringify(res.data));
       toast.success("Signin successful!");
+      get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
       console.log("Error in signin:", error.response?.data || error.message);
@@ -57,9 +64,10 @@ export const useAuthStore = create((set) => ({
   logout: async () => {
     try {
       const res = await axiosInstance.post("/auth/logout"); // Wait for the request to complete
-      console.log("Response from API:", res.data);
       set({ authuser: null });
+      localStorage.removeItem("authuser");
       toast.success(res.data?.message || "Logout successful!");
+      get().disconnectSocket();
     } catch (error) {
       toast.error(error.response?.data?.message || "Logout failed. Try again.");
       console.error("Error in logout:", error.response?.data || error.message);
@@ -81,6 +89,38 @@ export const useAuthStore = create((set) => ({
       set({ authuser: null });
     } finally {
       set({ isupdating: false });
+    }
+  },
+
+  connectSocket: () => {
+    // const storedUser = localStorage.getItem("authuser");
+    // if (storedUser) {
+    //   const user = JSON.parse(storedUser);
+    //   console.log("user", user);
+    //   const socket = io(BASE_URL, { query: { userId: user.user.id } });
+    //   socket.connect();
+    //   set({ socket: socket });
+    //   socket.on("getOnlineUsers", (userIds) => {
+    //     set({ onlineUsers: userIds });
+    //   });
+    // }
+    const { authuser } = get();
+    if (!authuser?.user?.id || get().socket?.connected) {
+      console.log("already connected");
+    }
+
+    const socket = io(BASE_URL, { query: { userId: authuser?.user?.id } });
+    socket.connect();
+    set({ socket: socket });
+
+    socket.on("getOnlineUsers", (userIds) => {
+      set({ onlineUsers: userIds });
+    });
+  },
+
+  disconnectSocket: () => {
+    if (get().socket?.connected) {
+      get().socket.disconnect();
     }
   },
 }));

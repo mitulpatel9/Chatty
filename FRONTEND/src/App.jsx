@@ -15,7 +15,10 @@ import { useThemeStore } from "./Store/UseThemeStore";
 function App() {
   const [count, setCount] = useState(0);
 
-  const { authuser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { authuser, checkAuth, isCheckingAuth, onlineUsers } = useAuthStore();
+
+  console.log("Online users:", { onlineUsers });
+
   const { theme } = useThemeStore();
   useEffect(() => {
     checkAuth(); // Ensure `checkAuth` is being called inside a valid hook
