@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
-.env
+
+
 
 # Logs
 logs
@@ -26,3 +27,5 @@ dist-ssr/
 *.njsproj
 *.sln
 *.sw?
+
+echo ".env"
