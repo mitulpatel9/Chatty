@@ -1,72 +1,45 @@
-const User = require("../Models/user");
-const Message = require("../Models/message")
-const cloudinary = require("cloudinary").v2;
-const { getReceiverSocketId, io } = require("../utils/soket");
-const getUserAtSlidebar = async(req, res) => {
-    try {
-        const loggedInuserid = req.user._id;
-        const filteredUser = await User.find({ id: { $ne: loggedInuserid._id } }).select("-passwoed");
+import { Server } from "socket.io";
+import http from "http";
+import express from "express";
 
-        return res.status(200).json(filteredUser);
-    } catch (error) {
-        console.log("Error in getUserAtSlidebar", error.message);
-        returnres.status(400).json({ message: "internal server error" });
-    }
+
+const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: ["http://localhost:5173"],
+    },
+});
+
+export function getReceiverSocketId(userId) {
+    return userSocketMap[userId];
 }
 
-const getMessages = async(req, res) => {
-    try {
-        const { id: Usertochatid } = req.params;
-        const myId = req.user._id;
+const userSocketMap = {};
 
-        const message = await Message.find({
-            $or: [{
-                senderId: myId,
-                receiverId: Usertochatid
-            }, {
-                senderId: Usertochatid,
-                receiverId: myId,
-            }, ]
-        });
-        return res.status(200).json(message);
-    } catch (error) {
-        console.log("Error in GetMessage", error.message);
-        returnres.status(400).json({ message: "internal server error" });
+io.on("connection", (socket) => {
+    console.log("A user connected", socket.id);
+
+    const userId = socket.handshake.query.userId;
+
+    if (userId) {
+        userSocketMap[userId] = socket.id;
     }
 
-}
+    // io.emit() is used to send events to all the connected clients
+    io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-const sendMessages = async(req, res) => {
-    try {
-        const { text, img } = req.body;
-        const { id: receiverId } = req.params;
-        const senderId = req.user._id;
 
-        let imgUrl;
-        if (img) {
-            const uploadResponse = await cloudinary.uploader.upload(img);
-            imgUrl = uploadResponse.secure_url
-        }
+    socket.on("disconnect", () => {
+        console.log("A user disconnected", socket.id);
+        delete userSocketMap[userId];
+        io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-        const newMessage = new Message({
-            receiverId,
-            senderId,
-            text,
-            img: imgUrl,
-        })
 
-        await newMessage.save();
 
-        const receiverSocketId = getReceiverSocketId(receiverId);
-        if (receiverSocketId) {
-            io.to(receiverSocketId).emit("NewMessage", newMessage);
-        }
-        return res.status(200).json(newMessage);
+    });
+});
 
-    } catch (error) {
-        console.log("Error in sendMessage", error.message);
-        returnres.status(400).json({ message: "internal server error" });
-    }
-}
 
-module.exports = { getUserAtSlidebar, getMessages, sendMessages }
+export { io, app, server };

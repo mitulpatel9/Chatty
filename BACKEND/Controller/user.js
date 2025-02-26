@@ -52,8 +52,10 @@ const handleSignup = async(req, res) => {
 
         // Respond with success
         res.status(201).json({
-            message: "User created successfully",
-            user: { id: newUser._id, name: newUser.name, email: newUser.email }
+
+            _id: newUser._id,
+            name: newUser.name,
+            email: newUser.email
         });
 
     } catch (error) {
@@ -98,8 +100,11 @@ const handleSignin = async(req, res) => {
 
         // Respond with success
         res.status(200).json({
-            message: "Signin successful",
-            user: { id: existingUser._id, name: existingUser.name, email: existingUser.email, profileIMG: existingUser.profileIMG }
+
+            _id: existingUser._id,
+            name: existingUser.name,
+            email: existingUser.email,
+            profileIMG: existingUser.profileIMG
         });
     } catch (error) {
         console.error(error);

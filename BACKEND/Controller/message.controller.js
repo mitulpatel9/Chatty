@@ -5,7 +5,8 @@ const { getReceiverSocketId, io } = require("../utils/soket");
 const getUserAtSlidebar = async(req, res) => {
     try {
         const loggedInuserid = req.user._id;
-        const filteredUser = await User.find({ id: { $ne: loggedInuserid._id } }).select("-passwoed");
+
+        const filteredUser = await User.find({ _id: { $ne: loggedInuserid._id } }).select("-passwoed");
 
         return res.status(200).json(filteredUser);
     } catch (error) {

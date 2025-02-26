@@ -16,9 +16,9 @@ export const useAuthStore = create((set, get) => ({
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check"); // Ensure correct route
-      // console.log("Response from API / its in checkauth from stor:", res.data); // Ensure the response shows correct user data
       set({ authuser: res.data });
-      localStorage.setItem("authuser", JSON.stringify(res.data));
+
+      get().connectSocket();
     } catch (error) {
       console.log("Error in checkAuth:", error.response?.data || error.message);
       set({ authuser: null });
@@ -33,9 +33,9 @@ export const useAuthStore = create((set, get) => ({
       console.log("Response from API:", data);
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authuser: res.data });
-      localStorage.setItem("authuser", JSON.stringify(res.data));
+
       toast.success("Signup successful!");
-      get().connectSocket();
+      // get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
       console.log("Error in signup:", error.response?.data || error.message);
@@ -49,7 +49,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/signin", data);
       set({ authuser: res.data });
-      localStorage.setItem("authuser", JSON.stringify(res.data));
+      console.log("Response from API:", res.data);
       toast.success("Signin successful!");
       get().connectSocket();
     } catch (error) {
@@ -93,23 +93,12 @@ export const useAuthStore = create((set, get) => ({
   },
 
   connectSocket: () => {
-    // const storedUser = localStorage.getItem("authuser");
-    // if (storedUser) {
-    //   const user = JSON.parse(storedUser);
-    //   console.log("user", user);
-    //   const socket = io(BASE_URL, { query: { userId: user.user.id } });
-    //   socket.connect();
-    //   set({ socket: socket });
-    //   socket.on("getOnlineUsers", (userIds) => {
-    //     set({ onlineUsers: userIds });
-    //   });
-    // }
     const { authuser } = get();
-    if (!authuser?.user?.id || get().socket?.connected) {
+    if (!authuser?._id || get().socket?.connected) {
       console.log("already connected");
     }
 
-    const socket = io(BASE_URL, { query: { userId: authuser?.user?.id } });
+    const socket = io(BASE_URL, { query: { userId: authuser?._id } });
     socket.connect();
     set({ socket: socket });
 
@@ -117,6 +106,21 @@ export const useAuthStore = create((set, get) => ({
       set({ onlineUsers: userIds });
     });
   },
+
+  // connectSocket: () => {
+  //   const { authuser } = get();
+  //   if (!authuser?.user?.id || get().socket?.connected) {
+  //     console.log("already connected");
+  //   }
+
+  //   const socket = io(BASE_URL, { query: { userId: authuser?.user?.id } });
+  //   socket.connect();
+  //   set({ socket: socket });
+
+  //   socket.on("getOnlineUsers", (userIds) => {
+  //     set({ onlineUsers: userIds });
+  //   });
+  // },
 
   disconnectSocket: () => {
     if (get().socket?.connected) {

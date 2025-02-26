@@ -5,6 +5,7 @@ import { Users } from "lucide-react";
 import { useAuthStore } from "../Store/useAuthStore";
 
 function Sidebar() {
+  const [showOnlineUsers, setShowOnlineUsers] = React.useState(false);
   const {
     selectedUser,
     getUsers,
@@ -17,6 +18,9 @@ function Sidebar() {
 
   const { onlineUsers } = useAuthStore();
 
+  const filteredUsers = showOnlineUsers
+    ? users.filter((user) => onlineUsers.includes(user._id))
+    : users;
   useEffect(() => {
     getUsers();
   }, [getUsers]);
@@ -31,9 +35,22 @@ function Sidebar() {
             <span className="font-medium hidden lg:block">Contacts</span>
           </div>
           {/* to-do Online filter toggle */}
+          <div className="flex items-center gap-2 mt-3">
+            <input
+              type="checkbox"
+              id="showOnlineUsers"
+              checked={showOnlineUsers}
+              onChange={(e) => setShowOnlineUsers(e.target.checked)}
+              className="checkbox checkbox-sm"
+            />
+            <label htmlFor="showOnlineUsers">Show Online Users</label>
+            <span className="text-xs text-zinc-400">
+              {filteredUsers.length - 1} online{" "}
+            </span>
+          </div>
         </div>
         <div className="overflow-y-auto w-full py-3">
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <button
               key={user._id}
               onClick={() => setSelectedUser(user)}
@@ -71,6 +88,20 @@ function Sidebar() {
               </div>
             </button>
           ))}
+          {filteredUsers.length === 0 && (
+            <div className="w-full p-3 flex items-center gap-3">
+              <div className="relative mx-auto lg:mx-0">
+                <img
+                  src="/avtar.png"
+                  alt="No users"
+                  className="size-12 object-cover rounded-full"
+                />
+              </div>
+              <div className="hidden lg:block text-left min-w-0">
+                <div className="font-medium truncate">No users</div>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
     </>
