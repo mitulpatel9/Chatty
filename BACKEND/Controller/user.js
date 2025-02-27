@@ -1,7 +1,7 @@
 import User from "../Models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import cloudinary from "cloudinary";
+import cloudinary from "../utils/Cloudinary.js";
 
 const getSignupPage = (req, res) => {
     return res.send("GET request - Signup page");
@@ -129,7 +129,7 @@ const UpdateProfile = async(req, res) => {
         const { profileIMG } = req.body;
 
         const userid = req.user._id;
-
+        console.log("from update  profile  ", userid);
         if (!userid) {
             return res.status(400).json({ message: "profile pic require" });
         }

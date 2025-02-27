@@ -23,9 +23,6 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 
 
-app.get('/', (req, res) => {
-    res.send("hello mitul");
-});
 
 app.use('/api/auth', userRoutes);
 app.use('/api/mess', messageRoutes);
