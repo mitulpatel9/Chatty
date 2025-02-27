@@ -28,10 +28,22 @@ app.use('/api/auth', userRoutes);
 app.use('/api/mess', messageRoutes);
 
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+    const frontendPath = path.join(__dirname, '..', 'FRONTEND', 'dist');
+    console.log(frontendPath)
+    app.use(express.static(frontendPath));
+
     app.get('*', (req, res) => {
-        res.sendFile(path.resolve(__dirname, '../frontend/dist', 'index.html'));
+        const indexPath = path.join(frontendPath, 'index.html');
+
+        console.log(indexPath)
+        res.sendFile(indexPath, (err) => {
+            if (err) {
+                console.error("❌ ERROR sending index.html:", err);
+                res.status(500).send("Internal Server Error");
+            }
+        });
     });
+
 }
 
 server.listen(PORT, () => {
