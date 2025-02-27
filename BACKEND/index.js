@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import connectMongoDB from './utils/MongoConnect.js';
+import { connectMongoDB } from './utils/MongoConnect.js';
 import userRoutes from './Routes/user.js';
 import messageRoutes from './Routes/message.js';
 import cookieParser from 'cookie-parser';
@@ -21,13 +21,7 @@ app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 
 
-const mongoURI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/ChatApp";
-connectMongoDB(mongoURI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-    })
-    .then(() => console.log('MongoDB connected successfully to ChatApp'))
-    .catch((err) => console.log('MongoDB connection error: ', err));
+
 
 app.get('/', (req, res) => {
     res.send("hello mitul");
@@ -43,4 +37,7 @@ if (process.env.NODE_ENV === 'production') {
     });
 }
 
-server.listen(PORT, () => { console.log("server is started at" + PORT) });
+server.listen(PORT, () => {
+    console.log("server is started at" + PORT);
+    connectMongoDB();
+});

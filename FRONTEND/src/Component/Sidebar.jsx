@@ -45,7 +45,7 @@ function Sidebar() {
             />
             <label htmlFor="showOnlineUsers">Show Online Users</label>
             <span className="text-xs text-zinc-400">
-              {filteredUsers.length - 1} online{" "}
+              {onlineUsers.length - 1} online{" "}
             </span>
           </div>
         </div>
