@@ -6,8 +6,10 @@ const messageRoutes = require('./Routes/message')
 const cookieParser = require('cookie-parser');
 const cors = require("cors");
 const { app, server } = require('./utils/soket');
-const PORT = process.env.PORT;
+const path = require('path');
 
+const PORT = process.env.PORT;
+const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,5 +31,11 @@ app.get('/', (req, res) => {
 app.use('/api/auth', userRoutes);
 app.use('/api/mess', messageRoutes);
 
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, './frontend/dist')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'));
+    });
+}
 
 server.listen(PORT, () => { console.log("server is started at" + PORT) });
