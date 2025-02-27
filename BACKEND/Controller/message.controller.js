@@ -1,7 +1,12 @@
-const User = require("../Models/user");
-const Message = require("../Models/message")
-const cloudinary = require("cloudinary").v2;
-const { getReceiverSocketId, io } = require("../utils/soket");
+import User from "../Models/user.js";
+import Message from "../Models/message.js";
+import cloudinary from "cloudinary";
+import { getReceiverSocketId, io } from "../utils/soket.js";
+
+const cloudinaryV2 = cloudinary.v2; // Since cloudinary has multiple exports
+
+export { User, Message, cloudinaryV2, getReceiverSocketId, io };
+
 const getUserAtSlidebar = async(req, res) => {
     try {
         const loggedInuserid = req.user._id;
@@ -70,4 +75,4 @@ const sendMessages = async(req, res) => {
     }
 }
 
-module.exports = { getUserAtSlidebar, getMessages, sendMessages }
+export { getUserAtSlidebar, getMessages, sendMessages }

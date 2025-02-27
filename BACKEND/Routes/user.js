@@ -1,6 +1,7 @@
-const express = require('express');
-const { checkAuth, UpdateProfile, LogOut, getSignupPage, handleSignup, getSigninPage, handleSignin } = require("../Controller/user.js")
-const protectedRoute = require("../Middleware/protectedRoute.js")
+import express from "express";
+import { getSignupPage, handleSignup, getSigninPage, handleSignin, LogOut, UpdateProfile, checkAuth } from "../Controller/user.js";
+import protectedRoute from "../Middleware/protectedRoute.js";
+
 const router = express.Router();
 
 // Signup Routes
@@ -22,4 +23,5 @@ router.put('/update-profile', protectedRoute, UpdateProfile)
 router.get('/check', protectedRoute, checkAuth);
 
 
-module.exports = router;
+
+export default router

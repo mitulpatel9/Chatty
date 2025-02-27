@@ -1,7 +1,7 @@
-const User = require('../Models/user')
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const cloudinary = require('../utils/Cloudinary');
+import User from "../Models/user.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import cloudinary from "cloudinary";
 
 const getSignupPage = (req, res) => {
     return res.send("GET request - Signup page");
@@ -156,4 +156,4 @@ const checkAuth = (req, res) => {
     }
 }
 
-module.exports = { getSignupPage, handleSignup, getSigninPage, handleSignin, LogOut, UpdateProfile, checkAuth };
+export { getSignupPage, handleSignup, getSigninPage, handleSignin, LogOut, UpdateProfile, checkAuth };
